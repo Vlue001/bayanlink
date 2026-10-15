@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BayanLink – Interactive Prototype</title>
+<style>
+:root{
+  --bg:#EEF2F7; --card:#FFFFFF; --ink:#16202B; --muted:#5A6878; --line:#D9E1EA;
+  --brand:#1F4E78; --brand2:#2E74B5; --accent:#E8A83E; --ok:#2E6B45; --warn:#C47A00; --bad:#B3392F;
+  --soft:#E4EEF8; --phoneedge:#0F1A24; --onbrand:#FFFFFF;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E141B; --card:#17212C; --ink:#EAF0F6; --muted:#9AABBC; --line:#2A3846;
+    --brand:#5B9BD5; --brand2:#7DB3E6; --accent:#E8A83E; --ok:#5FBF86; --warn:#E3A33A; --bad:#EF7B70;
+    --soft:#1F2D3B; --phoneedge:#000; --onbrand:#0E141B; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E141B; --card:#17212C; --ink:#EAF0F6; --muted:#9AABBC; --line:#2A3846;
+  --brand:#5B9BD5; --brand2:#7DB3E6; --accent:#E8A83E; --ok:#5FBF86; --warn:#E3A33A; --bad:#EF7B70;
+  --soft:#1F2D3B; --phoneedge:#000; --onbrand:#0E141B; color-scheme:dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:15px;line-height:1.4}
+.wrap{display:flex;gap:28px;justify-content:center;align-items:flex-start;padding:24px;max-width:1100px;margin:0 auto}
+.guide{width:300px;flex:0 0 300px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;position:sticky;top:16px}
+.guide h1{font-size:18px;margin:0 0 4px;color:var(--brand)}
+.guide p{margin:0 0 10px;color:var(--muted);font-size:13px}
+.guide h2{font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:14px 0 6px}
+.seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{flex:1;border:0;background:transparent;color:var(--ink);padding:9px 6px;font-size:13px;cursor:pointer}
+.seg button.on{background:var(--brand);color:var(--onbrand);font-weight:600}
+.path button{display:block;width:100%;text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:8px 10px;margin-bottom:6px;font-size:13px;cursor:pointer}
+.path button:hover{border-color:var(--brand2)}
+.path b{color:var(--brand)}
+.phone{width:390px;height:790px;flex:0 0 390px;background:var(--card);border:10px solid var(--phoneedge);border-radius:38px;display:flex;flex-direction:column;overflow:hidden;position:relative;box-shadow:0 12px 40px rgba(0,0,0,.25)}
+.phone.large{font-size:18px}
+.top{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--brand);color:var(--onbrand)}
+.top .ttl{font-weight:700;font-size:17px}
+.top .sub{font-size:11px;opacity:.85}
+.top button{background:rgba(255,255,255,.18);border:0;color:inherit;border-radius:10px;padding:6px 9px;cursor:pointer;font-size:15px}
+.screen{flex:1;overflow-y:auto;padding:14px;background:var(--bg)}
+.tabs{display:flex;border-top:1px solid var(--line);background:var(--card)}
+.tabs button{flex:1;border:0;background:transparent;color:var(--muted);padding:8px 2px 9px;font-size:11px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+.tabs button span{font-size:19px;line-height:1}
+.tabs button.on{color:var(--brand);font-weight:700}
+.tabs button.fab span{background:var(--accent);color:#1A1A1A;border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-size:24px;margin-top:-18px;box-shadow:0 3px 8px rgba(0,0,0,.25)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:12px}
+.card h3{margin:0 0 6px;font-size:15px}
+.muted{color:var(--muted);font-size:13px}
+.row{display:flex;align-items:center;gap:10px}
+.sp{justify-content:space-between}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 4px;text-align:center;cursor:pointer;font-size:12px;color:var(--ink)}
+.tile span{display:block;font-size:24px;margin-bottom:4px}
+.tile:hover{border-color:var(--brand2)}
+.banner{border-radius:14px;padding:12px;margin-bottom:12px;background:#FFF1D6;color:#4A3200;border:1px solid #E8C879}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .banner{background:#3A2E12;color:#F4DDA6;border-color:#6B5520}}
+:root[data-theme="dark"] .banner{background:#3A2E12;color:#F4DDA6;border-color:#6B5520}
+.banner b{display:block;margin-bottom:2px}
+.btn{display:inline-block;border:0;background:var(--brand);color:var(--onbrand);padding:10px 14px;border-radius:12px;font-weight:600;cursor:pointer;font-size:14px}
+.btn.full{width:100%}
+.btn.alt{background:var(--soft);color:var(--brand)}
+.btn.ok{background:var(--ok);color:#fff}
+.btn.sm{padding:6px 10px;font-size:12px;border-radius:9px}
+.chip{display:inline-block;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 11px;margin:0 6px 6px 0;font-size:13px;cursor:pointer}
+.chip.on{background:var(--brand);color:var(--onbrand);border-color:var(--brand)}
+.tag{display:inline-block;border-radius:999px;padding:2px 8px;font-size:11px;font-weight:600;background:var(--soft);color:var(--brand)}
+.tag.ok{background:rgba(46,107,69,.15);color:var(--ok)} .tag.warn{background:rgba(196,122,0,.15);color:var(--warn)} .tag.bad{background:rgba(179,57,47,.15);color:var(--bad)}
+textarea,select,input[type=text]{width:100%;border:1px solid var(--line);border-radius:10px;padding:9px;background:var(--card);color:var(--ink);font:inherit}
+.photo{height:130px;border:2px dashed var(--line);border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--muted);text-align:center;font-size:13px;margin-bottom:8px;background:var(--card)}
+.photo.has{border-style:solid;border-color:var(--ok);color:var(--ink)}
+.tl{margin:8px 0 0 4px;border-left:2px solid var(--line);padding-left:14px}
+.tl div{position:relative;margin-bottom:10px;color:var(--muted);font-size:13px}
+.tl div:before{content:"";position:absolute;left:-21px;top:3px;width:10px;height:10px;border-radius:50%;background:var(--line)}
+.tl div.done{color:var(--ink);font-weight:600} .tl div.done:before{background:var(--ok)}
+.bar{height:10px;border-radius:6px;background:var(--line);overflow:hidden;margin-top:4px}
+.bar i{display:block;height:100%;background:var(--ok)}
+.bar i.w{background:var(--warn)} .bar i.b{background:var(--bad)}
+.toast{position:absolute;left:14px;right:14px;bottom:78px;background:#16202B;color:#fff;padding:11px 13px;border-radius:12px;font-size:13px;box-shadow:0 6px 18px rgba(0,0,0,.35);z-index:5}
+.chat{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+.msg{max-width:84%;padding:8px 11px;border-radius:14px;font-size:14px;white-space:pre-line}
+.msg.bot{background:var(--card);border:1px solid var(--line);align-self:flex-start}
+.msg.me{background:var(--brand);color:var(--onbrand);align-self:flex-end}
+.map{width:100%;border-radius:12px;border:1px solid var(--line);background:var(--card);display:block}
+.back{background:none;border:0;color:var(--brand);font-weight:600;cursor:pointer;padding:0 0 8px;font-size:14px}
+.note{font-size:11px;color:var(--muted);text-align:center;margin:6px 0 2px}
+hr{border:0;border-top:1px solid var(--line);margin:10px 0}
+@media (max-width:860px){
+  .wrap{flex-direction:column;align-items:center;padding:10px}
+  .guide{position:static;width:100%;max-width:420px;flex:none}
+}
+@media (max-width:440px){
+  .wrap{padding:0}
+  .phone{width:100%;flex:none;height:100vh;height:100dvh;border:0;border-radius:0}
+  .guide{border-radius:0;border-left:0;border-right:0}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <aside class="guide">
+    <h1>BayanLink prototype</h1>
+    <p>Clickable demo for ISS170 Activity 4. All names, numbers, places and peso amounts are sample data.</p>
+    <h2>View as</h2>
+    <div class="seg" id="roleSeg">
+      <button data-a="role" data-v="resident" class="on">Resident</button>
+      <button data-a="role" data-v="official">Barangay official</button>
+    </div>
+    <h2>Suggested demo path</h2>
+    <div class="path" id="path"></div>
+    <h2>Screen theme</h2>
+    <div class="seg">
+      <button data-a="theme" data-v="auto" class="on" id="thAuto">Auto</button>
+      <button data-a="theme" data-v="light">Light</button>
+      <button data-a="theme" data-v="dark">Dark</button>
+    </div>
+  </aside>
+  <div class="phone" id="phone">
+    <div class="top">
+      <div><div class="ttl" id="ttl">BayanLink</div><div class="sub" id="sub">Brgy. Bagong Silangan, QC (sample)</div></div>
+      <div class="row" style="gap:6px">
+        <button data-a="goto" data-view="chat" title="SMS and chatbot help">💬</button>
+        <button data-a="goto" data-view="settings" title="Settings">⚙️</button>
+      </div>
+    </div>
+    <div class="screen" id="screen"></div>
+    <nav class="tabs" id="tabs"></nav>
+    <div id="toastbox"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+var STATUS=["Received","Assigned","In progress","Resolved"];
+var OFFICE={"Pothole / road":"City Engineering","Clogged drainage":"Barangay Engineering + DRRM","Uncollected garbage":"Barangay Sanitation / CENRO","Broken streetlight":"City Electrical Division","Flooding":"DRRM Office"};
+var CATS=Object.keys(OFFICE);
+var SAMPLE={pothole:{cat:"Pothole / road",conf:94,label:"Road with a deep hole"},drain:{cat:"Clogged drainage",conf:92,label:"Drain full of trash"},garbage:{cat:"Uncollected garbage",conf:89,label:"Pile of garbage on a corner"}};
+
+var S={
+  role:"resident", tab:"home", view:null, large:false, lang:"en", sms:true, anon:false, consent:true,
+  alert:{on:true,title:"Heavy rainfall advisory (sample)",msg:"Low-lying areas may flood tonight. Prepare a go-bag and know your evacuation center.",time:"10 min ago"},
+  alertLog:[],
+  reports:[
+    {id:"BL-1038",cat:"Clogged drainage",desc:"Drain near the covered court is blocked.",loc:"Near Covered Court",status:1,owner:"other",x:210,y:70,office:OFFICE["Clogged drainage"],t:"Yesterday"},
+    {id:"BL-1039",cat:"Uncollected garbage",desc:"Garbage not collected for 3 days.",loc:"Purok 4",status:0,owner:"other",x:120,y:140,office:OFFICE["Uncollected garbage"],t:"Yesterday"},
+    {id:"BL-1040",cat:"Broken streetlight",desc:"Streetlight out along the main road.",loc:"Main Road",status:2,owner:"me",x:70,y:60,office:OFFICE["Broken streetlight"],t:"2 days ago"},
+    {id:"BL-1041",cat:"Pothole / road",desc:"Large pothole before the bridge.",loc:"Bridge approach",status:3,owner:"me",x:250,y:140,office:OFFICE["Pothole / road"],t:"5 days ago"},
+    {id:"BL-1042",cat:"Clogged drainage",desc:"Water pooling after rain.",loc:"Purok 2",status:0,owner:"other",x:200,y:85,office:OFFICE["Clogged drainage"],t:"Today"}
+  ],
+  nextId:1043,
+  hazards:[{x:95,y:118,lvl:"Knee-deep",t:"12 min ago"},{x:185,y:150,lvl:"Ankle-deep",t:"25 min ago"},{x:225,y:105,lvl:"Waist-deep",t:"4 min ago"}],
+  evac:{x:262,y:48,name:"Barangay Covered Court (sample)"},
+  bins:[{n:"Bin A – Main Road",f:86},{n:"Bin B – Market",f:61},{n:"Bin C – Purok 4",f:23}],
+  tasks:[{id:1,t:"Verify a drainage report on-site",pay:50,st:0},{id:2,t:"Collect segregated recyclables (Purok 2)",pay:120,st:0},{id:3,t:"Help a senior citizen file a report",pay:80,st:0}],
+  listings:[{t:"PET bottles",kg:12}],
+  wallet:250, points:40, badges:{reporter:false,flood:false,seg:false}, done:{},
+  draft:{photo:null,cat:null,desc:""},
+  chat:[], chatStep:0, lastReport:null, toast:null, selMarker:null, bcAudience:"Bagong Silangan (all puroks)"
+};
+
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function T(en,fil){return S.lang==="fil"?fil:en}
+var $=function(s){return document.querySelector(s)};
+
+/* ---------- toast ---------- */
+var toastTimer=null;
+function toast(msg){
+  S.toast=msg; $("#toastbox").innerHTML='<div class="toast" role="status">'+esc(msg)+'</div>';
+  clearTimeout(toastTimer); toastTimer=setTimeout(function(){S.toast=null;$("#toastbox").innerHTML=""},2800);
+}
+
+/* ---------- SVG map ---------- */
+function mapSVG(mode){
+  var h='<svg class="map" viewBox="0 0 320 200" role="img" aria-label="Sample barangay map">';
+  h+='<rect width="320" height="200" fill="var(--soft)"/>';
+  h+='<path d="M0 170 C80 150 140 190 220 160 S300 150 320 160" stroke="#5B9BD5" stroke-width="16" fill="none" opacity=".55"/>';
+  h+='<g stroke="var(--line)" stroke-width="5" fill="none"><path d="M20 20 H300"/><path d="M20 100 H300"/><path d="M60 10 V140"/><path d="M160 10 V140"/><path d="M260 10 V140"/></g>';
+  h+='<text x="8" y="195" font-size="8" fill="var(--muted)">Sample map – not to scale</text>';
+  if(mode==="heat"){
+    S.reports.forEach(function(r){
+      var c=r.status===3?"#2E6B45":"#B3392F";
+      h+='<circle cx="'+r.x+'" cy="'+r.y+'" r="'+(r.status===3?10:22)+'" fill="'+c+'" opacity="'+(r.status===3?.25:.22)+'"/><circle cx="'+r.x+'" cy="'+r.y+'" r="4" fill="'+c+'"/>';
+    });
+  } else {
+    S.hazards.forEach(function(z,i){
+      var c=z.lvl==="Ankle-deep"?"#E8A83E":z.lvl==="Knee-deep"?"#D9772B":"#B3392F";
+      h+='<g data-a="marker" data-i="'+i+'" style="cursor:pointer"><circle cx="'+z.x+'" cy="'+z.y+'" r="13" fill="'+c+'" opacity=".3"/><circle cx="'+z.x+'" cy="'+z.y+'" r="6" fill="'+c+'" stroke="#fff" stroke-width="1.5"/></g>';
+    });
+    h+='<g data-a="marker" data-i="evac" style="cursor:pointer"><rect x="'+(S.evac.x-9)+'" y="'+(S.evac.y-9)+'" width="18" height="18" rx="4" fill="#2E6B45"/><text x="'+S.evac.x+'" y="'+(S.evac.y+5)+'" font-size="12" text-anchor="middle" fill="#fff">⌂</text></g>';
+    h+='<circle cx="170" cy="130" r="7" fill="#2E74B5" stroke="#fff" stroke-width="2"/><text x="180" y="134" font-size="9" fill="var(--ink)">You</text>';
+  }
+  return h+'</svg>';
+}
+
+/* ---------- RESIDENT SCREENS ---------- */
+function vHome(){
+  var mine=S.reports.filter(function(r){return r.owner==="me"}).slice(-3).reverse();
+  var h='';
+  if(S.alert.on){h+='<div class="banner"><b>⚠️ '+esc(S.alert.title)+'</b>'+esc(S.alert.msg)+'<div class="row sp" style="margin-top:8px"><span class="muted" style="color:inherit;opacity:.8">'+esc(S.alert.time)+'</span><button class="btn sm" data-a="tab" data-v="alerts">Open flood map</button></div></div>';}
+  h+='<div class="card"><div class="row sp"><div><h3 style="margin:0">'+T("Mabuhay, Joan!","Mabuhay, Joan!")+'</h3><div class="muted">'+T("What would you like to do?","Ano ang gusto mong gawin?")+'</div></div><span class="tag">'+S.points+' pts</span></div></div>';
+  h+='<div class="grid">'+
+    tile("📸",T("Report issue","Mag-ulat"),"tab","report")+
+    tile("🌊",T("Flood map","Mapa ng baha"),"tab","alerts")+
+    tile("🗑️",T("Waste &amp; bins","Basura"),"goto","waste")+
+    tile("🎓",T("Learn","Matuto"),"tab","learn")+
+    tile("💼",T("Earn","Kumita"),"tab","earn")+
+    tile("💬",T("SMS / chat help","Tulong sa SMS"),"goto","chat")+'</div>';
+  h+='<div class="card"><div class="row sp"><h3 style="margin:0">'+T("My reports","Mga ulat ko")+'</h3><button class="btn alt sm" data-a="goto" data-view="myreports">'+T("See all","Lahat")+'</button></div>';
+  if(!mine.length){h+='<p class="muted">'+T("No reports yet.","Wala pang ulat.")+'</p>';}
+  mine.forEach(function(r){h+=reportRow(r)});
+  return h+'</div>';
+}
+function tile(ic,label,a,v){return '<div class="tile" role="button" tabindex="0" data-a="'+a+'" data-'+(a==="tab"?"v":"view")+'="'+v+'"><span>'+ic+'</span>'+label+'</div>'}
+function statusTag(s){return '<span class="tag '+(s===3?"ok":s===0?"warn":"")+'">'+STATUS[s]+'</span>'}
+function reportRow(r){
+  return '<div class="row sp" style="padding:8px 0;border-top:1px solid var(--line);cursor:pointer" data-a="detail" data-id="'+r.id+'"><div><b>'+esc(r.cat)+'</b><div class="muted">'+esc(r.id)+' · '+esc(r.loc)+'</div></div>'+statusTag(r.status)+'</div>';
+}
+
+function vReport(){
+  var d=S.draft,h='<h3 style="margin:0 0 8px">'+T("Report a problem","Mag-ulat ng problema")+'</h3>';
+  h+='<div class="photo'+(d.photo?" has":"")+'" id="photoBox">'+(d.photo?("📷 "+esc(SAMPLE[d.photo].label)):T("Tap a sample photo below to attach it","Pumili ng sample na larawan sa ibaba"))+'</div>';
+  h+='<div style="margin-bottom:10px"><span class="muted">'+T("Sample photos (demo):","Sample na larawan (demo):")+'</span><br>'+
+    '<span class="chip" data-a="photo" data-v="pothole">🕳️ Pothole</span><span class="chip" data-a="photo" data-v="drain">🌧️ Drain</span><span class="chip" data-a="photo" data-v="garbage">🗑️ Garbage</span></div>';
+  if(d.photo){var p=SAMPLE[d.photo];h+='<div class="card" style="background:var(--soft)"><b>🤖 AI suggestion</b><div class="muted">'+T("Suggested category","Mungkahing kategorya")+': <b>'+esc(p.cat)+'</b> ('+p.conf+'% match). '+T("You can change it.","Maaari mo itong palitan.")+'</div></div>';}
+  h+='<div class="muted" style="margin-bottom:4px">'+T("Category","Kategorya")+'</div><div style="margin-bottom:6px">';
+  CATS.forEach(function(c){h+='<span class="chip'+(d.cat===c?" on":"")+'" data-a="cat" data-v="'+esc(c)+'">'+esc(c)+'</span>'});
+  h+='</div>';
+  h+='<div class="card row"><span style="font-size:20px">📍</span><div><b>'+T("Location detected (GPS demo)","Lokasyon (GPS demo)")+'</b><div class="muted">Near Covered Court, Brgy. Bagong Silangan</div></div></div>';
+  h+='<div class="muted" style="margin-bottom:4px">'+T("Details (optional)","Detalye (opsyonal)")+'</div><textarea id="desc" rows="3" placeholder="'+T("Describe the problem","Ilarawan ang problema")+'">'+esc(d.desc)+'</textarea>';
+  h+='<label class="row" style="margin:10px 0"><input type="checkbox" data-a="anon" '+(S.anon?"checked":"")+'> <span>'+T("Report anonymously","Mag-ulat nang hindi nagpapakilala")+'</span></label>';
+  h+='<div class="muted" style="margin-bottom:10px">'+T("Your photo and location are shared only with the responsible office. See Settings for privacy choices.","Ang larawan at lokasyon mo ay ibabahagi lamang sa kinauukulang tanggapan. Tingnan ang Settings.")+'</div>';
+  h+='<button class="btn full" data-a="submit">'+T("Submit report","Isumite ang ulat")+'</button>';
+  return h;
+}
+function vSuccess(){
+  var r=S.lastReport;
+  var dup=r.cat==="Clogged drainage";
+  var h='<div class="card" style="text-align:center"><div style="font-size:38px">✅</div><h3>'+T("Report sent","Naipadala na ang ulat")+'</h3><div class="muted">'+T("Tracking ID","Tracking ID")+': <b>'+esc(r.id)+'</b></div></div>';
+  h+='<div class="card"><b>'+T("Routed to","Ipinadala sa")+':</b> '+esc(r.office)+(dup?'<hr><b>🔁 '+T("Duplicate check","Pagsusuri ng duplicate")+':</b> <span class="muted">'+T("2 similar drainage reports nearby were grouped with yours so the office handles one case.","May 2 magkatulad na ulat sa malapit na pinagsama sa iyo.")+'</span>':'')+'</div>';
+  h+='<button class="btn full" data-a="detail" data-id="'+esc(r.id)+'">'+T("Track this report","Subaybayan ang ulat")+'</button>';
+  return h;
+}
+function vMyReports(){
+  var h='<button class="back" data-a="goto" data-view="">← '+T("Home","Home")+'</button><h3 style="margin:0 0 8px">'+T("My reports","Mga ulat ko")+'</h3><div class="card">';
+  var mine=S.reports.filter(function(r){return r.owner==="me"}).slice().reverse();
+  if(!mine.length)h+='<p class="muted">'+T("No reports yet.","Wala pang ulat.")+'</p>';
+  mine.forEach(function(r){h+=reportRow(r)});
+  return h+'</div>';
+}
+function vDetail(id){
+  var r=S.reports.filter(function(x){return x.id===id})[0]; if(!r)return vHome();
+  var h='<button class="back" data-a="goto" data-view="myreports">← '+T("My reports","Mga ulat ko")+'</button>';
+  h+='<div class="card"><div class="row sp"><h3 style="margin:0">'+esc(r.cat)+'</h3>'+statusTag(r.status)+'</div><div class="muted">'+esc(r.id)+' · '+esc(r.loc)+'</div><p>'+esc(r.desc||"–")+'</p><div class="muted">'+T("Handled by","Hawak ng")+': '+esc(r.office)+'</div></div>';
+  h+='<div class="card"><b>'+T("Progress","Progreso")+'</b><div class="tl">';
+  STATUS.forEach(function(s,i){h+='<div class="'+(i<=r.status?"done":"")+'">'+s+'</div>'});
+  h+='</div></div>';
+  if(r.status===3){h+='<div class="card"><b>'+T("Before / after","Bago / pagkatapos")+'</b><div class="row" style="margin-top:8px"><div class="photo" style="flex:1;height:80px;margin:0">Before (sample)</div><div class="photo has" style="flex:1;height:80px;margin:0">After (sample)</div></div></div>';}
+  if(r.status<3){h+='<button class="btn alt full" data-a="advance" data-id="'+esc(r.id)+'">⏩ '+T("Simulate office update (demo only)","I-simulate ang update ng tanggapan (demo)")+'</button>';}
+  return h;
+}
+
+function vAlerts(){
+  var h='<h3 style="margin:0 0 8px">'+T("Flood map and alerts","Mapa ng baha at mga alerto")+'</h3>';
+  if(S.alert.on)h+='<div class="banner"><b>⚠️ '+esc(S.alert.title)+'</b>'+esc(S.alert.msg)+'</div>';
+  h+=mapSVG("hazard");
+  h+='<div class="muted" style="margin:6px 0 8px">'+T("Tap a marker for details. Colors show reported water depth; the green square is the evacuation center.","I-tap ang marker para sa detalye. Berde ang evacuation center.")+'</div>';
+  var m=S.selMarker;
+  if(m!==null){
+    if(m==="evac")h+='<div class="card"><b>🏫 '+esc(S.evac.name)+'</b><div class="muted">'+T("Safe route: stay on Main Road, avoid the creek side.","Ligtas na ruta: manatili sa Main Road, iwasan ang gilid ng sapa.")+'</div></div>';
+    else{var z=S.hazards[m];h+='<div class="card"><b>🌊 '+esc(z.lvl)+'</b><div class="muted">'+T("Reported by a resident","Iniulat ng residente")+' · '+esc(z.t)+'</div></div>';}
+  }
+  h+='<div class="card"><b>'+T("Report flood level at your location","I-ulat ang taas ng baha")+'</b><div style="margin-top:8px">';
+  ["Ankle-deep","Knee-deep","Waist-deep","Chest-deep"].forEach(function(l){h+='<span class="chip" data-a="flood" data-v="'+l+'">'+l+'</span>'});
+  h+='</div></div>';
+  h+='<label class="card row sp" style="cursor:pointer"><span><b>'+T("SMS alerts","SMS alerto")+'</b><div class="muted">'+T("Also send alerts to my phone number","Padalhan din ako sa SMS")+'</div></span><input type="checkbox" data-a="sms" '+(S.sms?"checked":"")+'></label>';
+  return h;
+}
+
+function vWaste(){
+  var h='<button class="back" data-a="goto" data-view="">← Home</button><h3 style="margin:0 0 8px">'+T("Waste &amp; bins","Basura at basurahan")+'</h3>';
+  h+='<div class="card"><b>🚛 '+T("Next collection","Susunod na hakot")+'</b><div class="muted">'+T("Tomorrow, 6:00 AM (sample schedule: Mon and Thu)","Bukas, 6:00 AM (sample: Lunes at Huwebes)")+'</div></div>';
+  h+='<div class="card"><b>'+T("Bin fill levels (sensor demo)","Antas ng laman ng bin (sensor demo)")+'</b>';
+  S.bins.forEach(function(b,i){
+    var cls=b.f>=80?"b":b.f>=55?"w":"";
+    h+='<div style="margin-top:10px"><div class="row sp"><span>'+esc(b.n)+'</span><b>'+b.f+'%</b></div><div class="bar"><i class="'+cls+'" style="width:'+b.f+'%"></i></div>'+(b.f>=80?'<div class="row sp" style="margin-top:4px"><span class="tag bad">'+T("Almost full – route suggested first","Halos puno – unahin sa ruta")+'</span><button class="btn sm alt" data-a="overflow" data-i="'+i+'">'+T("Report overflow","I-ulat")+'</button></div>':'')+'</div>';
+  });
+  h+='</div>';
+  h+='<div class="card"><b>'+T("Suggested truck route (demo)","Mungkahing ruta ng trak (demo)")+'</b><div class="muted">1) Bin A – Main Road → 2) Bin B – Market → 3) Bin C – Purok 4</div></div>';
+  h+='<div class="card"><b>'+T("Segregation guide","Gabay sa segregasyon")+'</b><div class="muted" style="margin:4px 0 6px">'+T("Tap a type","I-tap ang uri")+'</div><span class="chip" data-a="seg" data-v="Biodegradable: food scraps and leaves. Compost or use the green bin.">Biodegradable</span><span class="chip" data-a="seg" data-v="Recyclable: clean plastic, paper, glass, metal. Sell or drop at the recovery point.">Recyclable</span><span class="chip" data-a="seg" data-v="Residual: non-recyclable items. Bag it for regular collection.">Residual</span><span class="chip" data-a="seg" data-v="Special: batteries, bulbs, medical waste. Bring to the designated drop-off.">Special</span></div>';
+  return h;
+}
+
+function lessonList(){return [
+  {id:"flood",t:"Flood safety basics",ic:"🌊",q:"Floodwater is knee-deep outside. What should you do?",o:["Walk through it to save time","Stay put or move to the evacuation center by a safe route","Drive through quickly"],a:1,b:"flood"},
+  {id:"seg",t:"Waste segregation 101",ic:"♻️",q:"Where does a clean plastic bottle go?",o:["Biodegradable","Recyclable","Special waste"],a:1,b:"seg"},
+  {id:"rep",t:"How to make a useful report",ic:"📸",q:"Which detail makes a report easiest to act on?",o:["A clear photo and exact location","A very long story","No photo"],a:0,b:"reporter"}
+]}
+function vLearn(){
+  var h='<h3 style="margin:0 0 8px">'+T("Learn","Matuto")+'</h3><div class="card"><div class="row sp"><b>'+S.points+' pts</b><span class="muted">'+Object.keys(S.done).length+'/3 '+T("lessons","aralin")+'</span></div><div class="bar"><i style="width:'+Math.round(Object.keys(S.done).length/3*100)+'%"></i></div></div>';
+  lessonList().forEach(function(l){
+    h+='<div class="card row sp" data-a="lesson" data-id="'+l.id+'" style="cursor:pointer"><div class="row"><span style="font-size:26px">'+l.ic+'</span><div><b>'+l.t+'</b><div class="muted">2 min · quiz</div></div></div>'+(S.done[l.id]?'<span class="tag ok">Done</span>':'<span class="tag">Start</span>')+'</div>';
+  });
+  h+='<div class="card"><b>🏅 '+T("Badges","Mga badge")+'</b><div style="margin-top:8px">'+
+    '<span class="tag '+(S.badges.reporter?"ok":"")+'">Reporter</span> <span class="tag '+(S.badges.flood?"ok":"")+'">Flood Ready</span> <span class="tag '+(S.badges.seg?"ok":"")+'">Segregator</span></div></div>';
+  h+='<div class="card"><b>'+T("Club leaderboard (sample)","Leaderboard ng club (sample)")+'</b><div class="muted" style="margin-top:6px">1. Green Guardians – 320 pts<br>2. Brgy Youth Council – 280 pts<br>3. Eco Club (you) – '+(240+S.points)+' pts</div></div>';
+  return h;
+}
+function vLesson(id){
+  var l=lessonList().filter(function(x){return x.id===id})[0];
+  var h='<button class="back" data-a="tab" data-v="learn">← '+T("Lessons","Mga aralin")+'</button><div class="card"><h3>'+l.ic+' '+l.t+'</h3><p>'+esc(l.q)+'</p>';
+  l.o.forEach(function(o,i){h+='<div class="chip" style="display:block;margin-bottom:8px" data-a="answer" data-id="'+l.id+'" data-i="'+i+'">'+esc(o)+'</div>'});
+  return h+'</div>';
+}
+
+function vEarn(){
+  var h='<h3 style="margin:0 0 8px">'+T("Earn","Kumita")+'</h3><div class="card row sp"><div><div class="muted">'+T("Wallet (sample)","Wallet (sample)")+'</div><b style="font-size:22px">₱'+S.wallet+'</b></div><span class="tag">'+T("Licensed e-wallet partner","Lisensyadong e-wallet")+'</span></div>';
+  h+='<div class="card"><b>'+T("Micro-tasks near you","Mga gawain malapit sa iyo")+'</b>';
+  S.tasks.forEach(function(k){
+    h+='<div class="row sp" style="padding:10px 0;border-top:1px solid var(--line)"><div><div>'+esc(k.t)+'</div><div class="muted">₱'+k.pay+' '+T("(sample)","(sample)")+'</div></div>'+
+      (k.st===0?'<button class="btn sm" data-a="claim" data-id="'+k.id+'">'+T("Claim","Kunin")+'</button>':k.st===1?'<button class="btn sm ok" data-a="finish" data-id="'+k.id+'">'+T("Mark done","Tapos na")+'</button>':'<span class="tag ok">Paid</span>')+'</div>';
+  });
+  h+='</div><div class="card"><b>'+T("Recyclables for pickup","Recyclables para sa pickup")+'</b>';
+  S.listings.forEach(function(x){h+='<div class="row sp" style="padding:6px 0"><span>'+esc(x.t)+'</span><span class="muted">'+x.kg+' kg</span></div>'});
+  h+='<div style="margin-top:8px"><span class="chip" data-a="list" data-v="Cardboard|8">+ Cardboard 8 kg</span><span class="chip" data-a="list" data-v="Cans|5">+ Cans 5 kg</span></div></div>';
+  return h;
+}
+
+/* ---------- chat (SMS / chatbot) ---------- */
+function botSay(t){S.chat.push({w:"bot",t:t})}
+function meSay(t){S.chat.push({w:"me",t:t})}
+function chatStart(){
+  S.chat=[];S.chatStep=0;
+  botSay(T("BayanLink SMS help. Reply:\nREPORT – send a problem\nALERTS – latest warning\nWASTE – collection schedule","BayanLink SMS. Mag-reply ng:\nREPORT – mag-ulat\nALERTS – huling babala\nWASTE – iskedyul ng hakot"));
+}
+function chatOptions(){
+  if(S.chatStep===0)return ["REPORT","ALERTS","WASTE"];
+  if(S.chatStep===1)return ["1","2","3"];
+  if(S.chatStep===2)return ["LOC","Near Covered Court"];
+  return ["MENU"];
+}
+function chatReply(v){
+  meSay(v);
+  if(S.chatStep===0){
+    if(v==="REPORT"){botSay(T("What is the problem?\n1 Garbage\n2 Drain\n3 Road","Ano ang problema?\n1 Basura\n2 Kanal\n3 Kalsada"));S.chatStep=1;}
+    else if(v==="ALERTS"){botSay(S.alert.on?(S.alert.title+": "+S.alert.msg):T("No active alerts.","Walang aktibong alerto."));}
+    else {botSay(T("Next collection: tomorrow 6:00 AM (sample).","Susunod na hakot: bukas 6:00 AM (sample)."));}
+  } else if(S.chatStep===1){
+    S.chatCat=v==="1"?"Uncollected garbage":v==="2"?"Clogged drainage":"Pothole / road";
+    botSay(T("Send your location: reply LOC to use your phone's cell location, or type a landmark.","Ipadala ang lokasyon: i-reply ang LOC o mag-type ng landmark."));S.chatStep=2;
+  } else if(S.chatStep===2){
+    var id="BL-"+(S.nextId++);
+    var r={id:id,cat:S.chatCat,desc:"Reported by SMS.",loc:v==="LOC"?"Cell location (sample)":v,status:0,owner:"me",x:100+Math.random()*120,y:50+Math.random()*90,office:OFFICE[S.chatCat],t:"Just now"};
+    S.reports.push(r);
+    botSay(T("Report received. ID "+id+". Sent to "+r.office+". We will text you when it changes.","Natanggap ang ulat. ID "+id+". Ipinadala sa "+r.office+". Tetext ka namin kapag may update."));
+    S.chatStep=3;
+  } else {chatStart();}
+}
+function vChat(){
+  var h='<button class="back" data-a="goto" data-view="">← Home</button><h3 style="margin:0 0 4px">'+T("SMS / chatbot help","Tulong sa SMS / chatbot")+'</h3><div class="muted" style="margin-bottom:8px">'+T("Works on any phone, no app or data needed. Demo of the text channel.","Gumagana sa kahit anong phone, walang app o data. Demo ng text channel.")+'</div>';
+  h+='<div class="chat">';S.chat.forEach(function(m){h+='<div class="msg '+m.w+'">'+esc(m.t)+'</div>'});h+='</div><div>';
+  chatOptions().forEach(function(o){h+='<span class="chip" data-a="chat" data-v="'+esc(o)+'">'+esc(o)+'</span>'});
+  return h+'</div>';
+}
+function vSettings(){
+  var h='<button class="back" data-a="goto" data-view="">← Home</button><h3 style="margin:0 0 8px">'+T("Settings","Mga setting")+'</h3>';
+  h+='<div class="card"><b>'+T("Language","Wika")+'</b><div style="margin-top:8px"><span class="chip '+(S.lang==="en"?"on":"")+'" data-a="lang" data-v="en">English</span><span class="chip '+(S.lang==="fil"?"on":"")+'" data-a="lang" data-v="fil">Filipino</span></div></div>';
+  h+='<label class="card row sp" style="cursor:pointer"><span><b>'+T("Large text mode","Malaking letra")+'</b><div class="muted">'+T("Easier reading for seniors","Mas madaling basahin")+'</div></span><input type="checkbox" data-a="large" '+(S.large?"checked":"")+'></label>';
+  h+='<label class="card row sp" style="cursor:pointer"><span><b>'+T("Share location with reports","Ibahagi ang lokasyon")+'</b><div class="muted">'+T("Needed so the right office can find the problem","Kailangan para mahanap ng tanggapan")+'</div></span><input type="checkbox" data-a="consent" '+(S.consent?"checked":"")+'></label>';
+  h+='<div class="card"><b>'+T("Privacy","Privacy")+'</b><div class="muted">'+T("Only the data needed to handle a report is collected. Users under 18 need a parent or guardian's consent and a teacher-moderated account (prototype note).","Kinokolekta lamang ang kailangang datos. Ang wala pang 18 ay kailangan ng pahintulot ng magulang (tala ng prototype).")+'</div></div>';
+  return h;
+}
+
+/* ---------- OFFICIAL SCREENS ---------- */
+function vInbox(){
+  var h='<h3 style="margin:0 0 8px">Report inbox</h3>';
+  var list=S.reports.slice().reverse();
+  list.forEach(function(r){
+    h+='<div class="card"><div class="row sp"><b>'+esc(r.cat)+'</b>'+statusTag(r.status)+'</div><div class="muted">'+esc(r.id)+' · '+esc(r.loc)+' · '+esc(r.t)+'</div><div style="margin:6px 0">'+esc(r.desc)+'</div>';
+    if(r.status<3){
+      h+='<div class="row"><select data-a="assign" data-id="'+esc(r.id)+'" aria-label="Assign office"><option value="">Assign to…</option>';
+      ["Barangay Engineering + DRRM","Barangay Sanitation / CENRO","City Engineering","City Electrical Division","DRRM Office"].forEach(function(o){h+='<option'+(o===r.office&&r.status>=1?" selected":"")+'>'+o+'</option>'});
+      h+='</select><button class="btn sm" data-a="advance" data-id="'+esc(r.id)+'">Next</button></div>';
+    }
+    h+='</div>';
+  });
+  return h;
+}
+function vOMap(){
+  return '<h3 style="margin:0 0 8px">Hotspot map</h3>'+mapSVG("heat")+'<div class="muted" style="margin:6px 0">Red zones are open reports; green are resolved. Clusters show where problems repeat, such as the drainage cluster near the covered court.</div>'+
+  '<div class="card"><b>Insight (sample)</b><div class="muted">3 drainage reports within one block. Consider a clearing schedule instead of one-by-one repairs.</div></div>';
+}
+function vBroadcast(){
+  var h='<h3 style="margin:0 0 8px">Send an alert</h3><div class="card"><div class="muted" style="margin-bottom:4px">Audience</div><select id="aud"><option>Bagong Silangan (all puroks)</option><option>Purok 2 and Purok 4 only</option><option>Near creek side only</option></select>'+
+  '<div class="muted" style="margin:10px 0 4px">Message</div><textarea id="bmsg" rows="3">Rainfall is heavy. Residents near the creek, please move to the Barangay Covered Court.</textarea>'+
+  '<div class="row" style="margin:10px 0"><span class="tag">Push</span><span class="tag">SMS</span><span class="tag">Chatbot</span></div><button class="btn full" data-a="broadcast">Send alert</button></div>';
+  if(S.alertLog.length){h+='<div class="card"><b>Sent alerts</b>';S.alertLog.forEach(function(a){h+='<div class="muted" style="margin-top:6px">'+esc(a.t)+' – '+esc(a.aud)+': '+esc(a.m)+'</div>'});h+='</div>';}
+  return h;
+}
+function vStats(){
+  var tot=S.reports.length,res=S.reports.filter(function(r){return r.status===3}).length,open=tot-res;
+  var by={};S.reports.forEach(function(r){by[r.cat]=(by[r.cat]||0)+1});
+  var h='<h3 style="margin:0 0 8px">Barangay statistics</h3><div class="grid"><div class="tile"><b style="font-size:22px">'+tot+'</b><br>Total</div><div class="tile"><b style="font-size:22px">'+open+'</b><br>Open</div><div class="tile"><b style="font-size:22px">'+Math.round(res/tot*100)+'%</b><br>Resolved</div></div>';
+  h+='<div class="card"><b>Reports by category</b>';
+  Object.keys(by).forEach(function(c){h+='<div style="margin-top:8px"><div class="row sp"><span>'+esc(c)+'</span><b>'+by[c]+'</b></div><div class="bar"><i style="width:'+Math.round(by[c]/tot*100)+'%"></i></div></div>'});
+  return h+'</div><div class="card"><b>Average response time</b><div class="muted">2.1 days (sample figure for the demo)</div></div>';
+}
+
+/* ---------- render ---------- */
+function tabsFor(){
+  return S.role==="resident"
+   ?[["home",T("Home","Home"),"🏠"],["alerts",T("Alerts","Alerto"),"🌊"],["report",T("Report","Ulat"),"＋"],["learn",T("Learn","Aral"),"🎓"],["earn",T("Earn","Kita"),"💼"]]
+   :[["inbox","Inbox","📥"],["omap","Hotspots","🗺️"],["broadcast","Alert","📣"],["stats","Stats","📊"]];
+}
+function render(){
+  $("#phone").className="phone"+(S.large?" large":"");
+  $("#ttl").textContent=S.role==="resident"?"BayanLink":"BayanLink · Official";
+  $("#sub").textContent=S.role==="resident"?"Brgy. Bagong Silangan, QC (sample)":"Barangay dashboard (sample)";
+  var v=S.view,h="";
+  if(S.role==="resident"){
+    if(v==="success")h=vSuccess();
+    else if(v==="myreports")h=vMyReports();
+    else if(v&&v.indexOf("detail:")===0)h=vDetail(v.slice(7));
+    else if(v&&v.indexOf("lesson:")===0)h=vLesson(v.slice(7));
+    else if(v==="waste")h=vWaste();
+    else if(v==="chat")h=vChat();
+    else if(v==="settings")h=vSettings();
+    else h={home:vHome,alerts:vAlerts,report:vReport,learn:vLearn,earn:vEarn}[S.tab]();
+  } else {
+    if(v==="settings")h=vSettings(); else if(v==="chat")h=vChat();
+    else h={inbox:vInbox,omap:vOMap,broadcast:vBroadcast,stats:vStats}[S.tab]();
+  }
+  h+='<div class="note">Prototype with sample data – not a live service</div>';
+  var sc=$("#screen"); sc.innerHTML=h; sc.scrollTop=0;
+  var th="";
+  tabsFor().forEach(function(t){th+='<button class="'+(S.tab===t[0]&&!v?"on":"")+(t[0]==="report"?" fab":"")+'" data-a="tab" data-v="'+t[0]+'"><span>'+t[2]+'</span>'+t[1]+'</button>'});
+  $("#tabs").innerHTML=th;
+  var rs=document.querySelectorAll("#roleSeg button");for(var i=0;i<rs.length;i++){rs[i].className=rs[i].dataset.v===S.role?"on":""}
+  if(S.view==="chat"&&!S.chat.length){chatStart();render();}
+}
+
+/* ---------- demo path ---------- */
+var PATH=[
+ ["1","Home and active alert",{role:"resident",tab:"home",view:null}],
+ ["2","Report an issue (photo, AI category)",{role:"resident",tab:"report",view:null}],
+ ["3","Track a report to resolution",{role:"resident",tab:"home",view:"detail:BL-1040"}],
+ ["4","Flood map and early warning",{role:"resident",tab:"alerts",view:null}],
+ ["5","Waste module and bin levels",{role:"resident",tab:"home",view:"waste"}],
+ ["6","Learn: lessons and badges",{role:"resident",tab:"learn",view:null}],
+ ["7","Earn: micro-tasks",{role:"resident",tab:"earn",view:null}],
+ ["8","SMS / chatbot channel",{role:"resident",tab:"home",view:"chat"}],
+ ["9","Official: inbox and assignment",{role:"official",tab:"inbox",view:null}],
+ ["10","Official: hotspots, alert, stats",{role:"official",tab:"omap",view:null}]
+];
+function buildPath(){
+  var h="";PATH.forEach(function(p,i){h+='<button data-a="path" data-i="'+i+'"><b>'+p[0]+'.</b> '+p[1]+'</button>'});
+  $("#path").innerHTML=h;
+}
+
+/* ---------- actions ---------- */
+function completeLesson(id,ok){
+  var l=lessonList().filter(function(x){return x.id===id})[0];
+  if(ok&&!S.done[l.id]){S.done[l.id]=1;S.points+=10;S.badges[l.b]=true;toast("Correct! +10 points and a new badge.");}
+  else if(ok){toast("Correct! Already completed.");}
+  else toast("Not quite. Try again.");
+  S.view=ok?null:S.view; if(ok)S.tab="learn";
+}
+function act(a,d,el){
+  switch(a){
+    case "role":S.role=d.v;S.tab=d.v==="resident"?"home":"inbox";S.view=null;break;
+    case "theme":
+      var rt=document.documentElement;
+      if(d.v==="auto")rt.removeAttribute("data-theme");else rt.setAttribute("data-theme",d.v);
+      var tb=document.querySelectorAll(".guide .seg:last-of-type button");for(var i=0;i<tb.length;i++){tb[i].className=(tb[i].dataset.v===d.v)?"on":""}
+      return;
+    case "tab":S.tab=d.v;S.view=null;if(d.v==="alerts")S.selMarker=null;break;
+    case "goto":S.view=d.view||null;if(!d.view&&S.role==="resident")S.tab="home";break;
+    case "path":var p=PATH[+d.i][2];S.role=p.role;S.tab=p.tab;S.view=p.view;if(p.view==="chat")S.chat=[];break;
+    case "photo":S.draft.photo=d.v;S.draft.cat=SAMPLE[d.v].cat;var ta=$("#desc");if(ta)S.draft.desc=ta.value;break;
+    case "cat":S.draft.cat=d.v;var t2=$("#desc");if(t2)S.draft.desc=t2.value;break;
+    case "anon":S.anon=el.checked;return;
+    case "submit":
+      if(!S.draft.cat){toast("Please choose a category first.");return;}
+      var dsc=$("#desc");var desc=dsc?dsc.value:S.draft.desc;
+      var r={id:"BL-"+(S.nextId++),cat:S.draft.cat,desc:desc||"(no details)",loc:"Near Covered Court",status:0,owner:"me",x:160+Math.random()*60,y:100+Math.random()*30,office:OFFICE[S.draft.cat],t:"Just now"};
+      S.reports.push(r);S.lastReport=r;S.draft={photo:null,cat:null,desc:""};S.view="success";
+      if(!S.badges.reporter){S.points+=5;}
+      toast("Report submitted.");break;
+    case "detail":S.view="detail:"+d.id;break;
+    case "advance":
+      var rep=S.reports.filter(function(x){return x.id===d.id})[0];
+      if(rep&&rep.status<3){rep.status++;toast(rep.id+": "+STATUS[rep.status]+(rep.owner==="me"?" – notification sent to the resident.":" – resident notified."));}
+      break;
+    case "assign":
+      var rr=S.reports.filter(function(x){return x.id===d.id})[0];
+      if(rr&&el.value){rr.office=el.value;if(rr.status<1)rr.status=1;toast(rr.id+" assigned to "+el.value+".");}
+      break;
+    case "marker":S.selMarker=d.i==="evac"?"evac":+d.i;break;
+    case "flood":S.hazards.push({x:165+Math.random()*10,y:125+Math.random()*10,lvl:d.v,t:"Just now"});S.selMarker=null;toast("Flood report added to the shared map. Thank you!");break;
+    case "sms":S.sms=el.checked;toast(S.sms?"SMS alerts on.":"SMS alerts off.");return;
+    case "overflow":
+      var b=S.bins[+d.i];var r2={id:"BL-"+(S.nextId++),cat:"Uncollected garbage",desc:b.n+" is overflowing.",loc:b.n,status:0,owner:"me",x:100+Math.random()*100,y:60+Math.random()*60,office:OFFICE["Uncollected garbage"],t:"Just now"};
+      S.reports.push(r2);toast("Overflow reported as "+r2.id+".");break;
+    case "seg":toast(d.v);return;
+    case "lesson":S.view="lesson:"+d.id;break;
+    case "answer":var l=lessonList().filter(function(x){return x.id===d.id})[0];completeLesson(d.id,+d.i===l.a);break;
+    case "claim":S.tasks.forEach(function(k){if(k.id==+d.id)k.st=1});toast("Task claimed.");break;
+    case "finish":S.tasks.forEach(function(k){if(k.id==+d.id){k.st=2;S.wallet+=k.pay;}});toast("Verified and paid to your e-wallet (sample).");break;
+    case "list":var pr=d.v.split("|");S.listings.push({t:pr[0],kg:+pr[1]});toast("Listed for pickup by nearby collectors.");break;
+    case "chat":chatReply(d.v);break;
+    case "lang":S.lang=d.v;break;
+    case "large":S.large=el.checked;break;
+    case "consent":S.consent=el.checked;return;
+    case "broadcast":
+      var m=$("#bmsg").value||"Alert",au=$("#aud").value;
+      S.alert={on:true,title:"Barangay alert",msg:m,time:"Just now"};S.alertLog.push({t:"Now",aud:au,m:m});
+      toast("Alert sent by push, SMS and chatbot to "+au+".");break;
+  }
+  render();
+}
+
+document.addEventListener("click",function(e){
+  var el=e.target.closest("[data-a]");if(!el)return;
+  var tag=el.tagName;
+  if(tag==="INPUT"||tag==="SELECT")return; // handled by change
+  act(el.dataset.a,el.dataset,el);
+});
+document.addEventListener("change",function(e){
+  var el=e.target.closest("[data-a]");if(!el)return;
+  if(el.tagName==="INPUT"||el.tagName==="SELECT")act(el.dataset.a,el.dataset,el);
+});
+document.addEventListener("keydown",function(e){
+  if((e.key==="Enter"||e.key===" ")&&e.target.getAttribute&&e.target.getAttribute("role")==="button"){e.preventDefault();e.target.click();}
+});
+
+buildPath();render();
+})();
+</script>
+</body>
+</html>
